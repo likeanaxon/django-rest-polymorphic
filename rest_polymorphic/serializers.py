@@ -71,11 +71,17 @@ class PolymorphicSerializer(serializers.Serializer):
     def create(self, validated_data):
         resource_type = validated_data.pop(self.resource_type_field_name)
         serializer = self._get_serializer_from_resource_type(resource_type)
+        # Copy the _save_kwargs attribute to allow WritableNestedSerializer to do its job
+        if hasattr(self, '_save_kwargs'):
+            serializer._save_kwargs = self._save_kwargs
         return serializer.create(validated_data)
 
     def update(self, instance, validated_data):
         resource_type = validated_data.pop(self.resource_type_field_name)
         serializer = self._get_serializer_from_resource_type(resource_type)
+        # Copy the _save_kwargs attribute to allow WritableNestedSerializer to do its job
+        if hasattr(self, '_save_kwargs'):
+            serializer._save_kwargs = self._save_kwargs
         return serializer.update(instance, validated_data)
 
     def is_valid(self, *args, **kwargs):
